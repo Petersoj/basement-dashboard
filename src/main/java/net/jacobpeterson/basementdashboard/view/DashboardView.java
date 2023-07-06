@@ -6,6 +6,8 @@ import javafx.stage.Stage;
 import net.jacobpeterson.basementdashboard.BasementDashboard;
 import net.jacobpeterson.basementdashboard.view.component.BackgroundVideo;
 import net.jacobpeterson.basementdashboard.view.component.Clock;
+import net.jacobpeterson.basementdashboard.view.component.Date;
+import net.jacobpeterson.basementdashboard.view.component.Environment;
 
 import static javafx.scene.Cursor.NONE;
 import static javafx.scene.paint.Color.BLACK;
@@ -23,6 +25,8 @@ public class DashboardView {
 
     private BackgroundVideo backgroundVideo;
     private Clock clock;
+    private Date date;
+    private Environment environment;
 
     /**
      * Instantiates a new {@link DashboardView}.
@@ -44,6 +48,8 @@ public class DashboardView {
         setupScene();
         setupBackgroundVideo();
         setupClock();
+        setupDate();
+        setupEnvironment();
         setupStage();
     }
 
@@ -64,9 +70,21 @@ public class DashboardView {
         componentPane.getChildren().add(clock.getContainer());
     }
 
+    private void setupDate() {
+        date = new Date(this);
+        date.getContainer().setTranslateY(-250);
+        componentPane.getChildren().add(date.getContainer());
+    }
+
+    private void setupEnvironment() {
+        environment = new Environment(this);
+        environment.getContainer().setTranslateY(250);
+        componentPane.getChildren().add(environment.getContainer());
+    }
+
     private void setupStage() {
-        stage.setMinWidth(300);
-        stage.setMinHeight(200);
+        stage.setMinWidth(1280);
+        stage.setMinHeight(720);
         stage.setFullScreen(true);
         stage.setTitle("Basement Dashboard");
         stage.setScene(scene);
@@ -80,5 +98,9 @@ public class DashboardView {
 
     public BasementDashboard getBasementDashboard() {
         return basementDashboard;
+    }
+
+    public BackgroundVideo getBackgroundVideo() {
+        return backgroundVideo;
     }
 }

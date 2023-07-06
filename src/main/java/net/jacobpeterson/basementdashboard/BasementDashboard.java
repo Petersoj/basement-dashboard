@@ -3,7 +3,10 @@ package net.jacobpeterson.basementdashboard;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import net.jacobpeterson.basementdashboard.data.BackgroundVideoData;
-import net.jacobpeterson.basementdashboard.data.ClockData;
+import net.jacobpeterson.basementdashboard.data.DateTimeData;
+import net.jacobpeterson.basementdashboard.data.WeatherData;
+import net.jacobpeterson.basementdashboard.http.client.OkHTTPClient;
+import net.jacobpeterson.basementdashboard.http.server.JavalinServer;
 import net.jacobpeterson.basementdashboard.util.exception.ExceptionUtil;
 import net.jacobpeterson.basementdashboard.view.DashboardView;
 
@@ -14,14 +17,20 @@ import static net.jacobpeterson.basementdashboard.util.exception.ExceptionUtil.s
  */
 public class BasementDashboard extends Application {
 
+    private OkHTTPClient OkHTTPClient;
     private BackgroundVideoData backgroundVideoData;
-    private ClockData clockData;
+    private DateTimeData dateTimeData;
+    private WeatherData weatherData;
+    private JavalinServer javalinServer;
     private DashboardView dashboardView;
 
     @Override
     public void init() {
+        OkHTTPClient = new OkHTTPClient();
         backgroundVideoData = new BackgroundVideoData();
-        clockData = new ClockData();
+        dateTimeData = new DateTimeData();
+        weatherData = new WeatherData(this);
+        javalinServer = new JavalinServer(this);
         dashboardView = new DashboardView(this);
     }
 
@@ -29,7 +38,13 @@ public class BasementDashboard extends Application {
     public void start(Stage primaryStage) {
         ExceptionUtil.PRIMARY_STAGE = primaryStage;
 
-        // Load data
+        try {
+            OkHTTPClient.start();
+        } catch (Exception exception) {
+            showException(exception.getMessage());
+            stop();
+            return;
+        }
         try {
             backgroundVideoData.start();
         } catch (Exception exception) {
@@ -38,7 +53,21 @@ public class BasementDashboard extends Application {
             return;
         }
         try {
-            clockData.start();
+            dateTimeData.start();
+        } catch (Exception exception) {
+            showException(exception.getMessage());
+            stop();
+            return;
+        }
+        try {
+            weatherData.start();
+        } catch (Exception exception) {
+            showException(exception.getMessage());
+            stop();
+            return;
+        }
+        try {
+            javalinServer.start();
         } catch (Exception exception) {
             showException(exception.getMessage());
             stop();
@@ -52,9 +81,19 @@ public class BasementDashboard extends Application {
     public void stop() {
         dashboardView.stop();
 
-        // Stop data in reverse order
+        // Stop in reverse order
         try {
-            clockData.stop();
+            javalinServer.stop();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        try {
+            weatherData.stop();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        try {
+            dateTimeData.stop();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -63,14 +102,27 @@ public class BasementDashboard extends Application {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+        try {
+            OkHTTPClient.stop();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public OkHTTPClient getOkHTTPClient() {
+        return OkHTTPClient;
     }
 
     public BackgroundVideoData getBackgroundVideoData() {
         return backgroundVideoData;
     }
 
-    public ClockData getClockData() {
-        return clockData;
+    public DateTimeData getDateTimeData() {
+        return dateTimeData;
+    }
+
+    public WeatherData getWeatherData() {
+        return weatherData;
     }
 
     public DashboardView getDashboardView() {

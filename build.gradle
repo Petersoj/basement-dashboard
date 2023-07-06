@@ -14,6 +14,9 @@ repositories {
 }
 
 dependencies {
+    // Logback logger implementation
+    implementation group: "ch.qos.logback", name: "logback-classic", version: "1.4.6"
+
     // Google Guava for a variety of useful methods
     implementation group: "com.google.guava", name: "guava", version: "31.1-jre"
 
@@ -22,6 +25,9 @@ dependencies {
 
     // OkHttp HTTP client
     implementation group: "com.squareup.okhttp3", name: "okhttp", version: "5.0.0-alpha.11"
+
+    // Javalin
+    implementation group: "io.javalin", name: "javalin", version: "4.6.4"
 }
 
 enum OS {

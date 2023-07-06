@@ -33,15 +33,17 @@ public class BackgroundVideo {
         mediaView.setPreserveRatio(true);
 
         backgroundVideoFilesIndex = 0;
-        next();
     }
 
     /**
      * Plays the next background video.
      */
-    public void next() {
+    public synchronized void next() {
         final MediaPlayer mediaPlayer = new MediaPlayer(new Media(backgroundVideoData.getBackgroundVideos()
                 .get(backgroundVideoFilesIndex++).toURI().toString()));
+        if (backgroundVideoFilesIndex >= backgroundVideoData.getBackgroundVideos().size()) {
+            backgroundVideoFilesIndex = 0;
+        }
         mediaPlayer.setAutoPlay(true);
         mediaPlayer.setOnEndOfMedia(() -> {
             mediaPlayer.seek(ZERO);
