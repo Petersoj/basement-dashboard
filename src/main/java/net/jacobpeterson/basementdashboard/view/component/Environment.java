@@ -2,14 +2,10 @@ package net.jacobpeterson.basementdashboard.view.component;
 
 import javafx.application.Platform;
 import javafx.scene.control.Label;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import net.jacobpeterson.basementdashboard.view.DashboardView;
 
 import static javafx.geometry.Pos.CENTER;
-import static javafx.scene.paint.Color.BLACK;
 import static javafx.scene.paint.Color.WHITE;
 import static net.jacobpeterson.basementdashboard.util.view.FontUtil.interFont;
 
@@ -18,8 +14,7 @@ import static net.jacobpeterson.basementdashboard.util.view.FontUtil.interFont;
  */
 public class Environment {
 
-    private final DashboardView dashboardView;
-    private final StackPane container;
+    private final HBox container;
 
     /**
      * Instantiates a new {@link Environment}.
@@ -27,46 +22,34 @@ public class Environment {
      * @param dashboardView the {@link DashboardView}
      */
     public Environment(DashboardView dashboardView) {
-        this.dashboardView = dashboardView;
-
-        final HBox foreground = newEnvironmentHBox(WHITE);
-        final HBox background = newEnvironmentHBox(BLACK);
-        background.setEffect(new GaussianBlur(19));
-        background.setOpacity(0.7);
-
-        container = new StackPane(background, foreground);
-    }
-
-    private HBox newEnvironmentHBox(Color fill) {
-        final Label locationLabel = newLabel(fill);
+        final Label locationLabel = newLabel();
         locationLabel.setText("Draper, Utah");
 
-        final Label temperatureLabel = newLabel(fill);
+        final Label temperatureLabel = newLabel();
         dashboardView.getBasementDashboard().getWeatherData().addOnTemperatureUpdate(temperature ->
                 Platform.runLater(() -> temperatureLabel.setText(temperature)));
 
-        final Label shortForecastLabel = newLabel(fill);
+        final Label shortForecastLabel = newLabel();
         dashboardView.getBasementDashboard().getWeatherData().addOnShortForecastUpdate(shortForecast ->
                 Platform.runLater(() -> shortForecastLabel.setText(shortForecast)));
 
-        final HBox forecastHBox = new HBox(25, temperatureLabel, shortForecastLabel);
+        final HBox forecastHBox = new HBox(35, temperatureLabel, shortForecastLabel);
         forecastHBox.setAlignment(CENTER);
         forecastHBox.setFillHeight(true);
-        final HBox environmentHBox = new HBox(125, locationLabel, forecastHBox);
-        environmentHBox.setAlignment(CENTER);
-        environmentHBox.setFillHeight(true);
-        return environmentHBox;
+        container = new HBox(150, locationLabel, forecastHBox);
+        container.setAlignment(CENTER);
+        container.setFillHeight(true);
     }
 
-    private Label newLabel(Color fill) {
+    private Label newLabel() {
         final Label label = new Label();
-        label.setFont(interFont(30));
+        label.setFont(interFont(40));
         label.setAlignment(CENTER);
-        label.setTextFill(fill);
+        label.setTextFill(WHITE);
         return label;
     }
 
-    public StackPane getContainer() {
+    public HBox getContainer() {
         return container;
     }
 }

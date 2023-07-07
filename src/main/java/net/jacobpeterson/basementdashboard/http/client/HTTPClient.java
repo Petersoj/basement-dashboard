@@ -3,21 +3,21 @@ package net.jacobpeterson.basementdashboard.http.client;
 import okhttp3.OkHttpClient;
 
 /**
- * {@link OkHTTPClient} handles <code>OkHttp</code>.
+ * {@link HTTPClient} handles <code>OkHttp</code>.
  */
-public class OkHTTPClient {
+public class HTTPClient {
 
     private OkHttpClient okHttpClient;
 
     /**
-     * Starts {@link OkHTTPClient}.
+     * Starts {@link HTTPClient}.
      */
     public void start() {
         okHttpClient = new OkHttpClient();
     }
 
     /**
-     * Stops {@link OkHTTPClient}.
+     * Stops {@link HTTPClient}.
      */
     public void stop() {
         if (okHttpClient != null) {

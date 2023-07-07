@@ -48,11 +48,12 @@ public class ExceptionUtil {
      * @param exceptionString the exception string
      */
     public static void showException(String exceptionString) {
+        System.err.println(exceptionString);
         final Alert alert = new Alert(ERROR, exceptionString, CLOSE);
         if (PRIMARY_STAGE.isShowing()) {
             alert.initOwner(PRIMARY_STAGE);
         }
-        alert.showAndWait();
+        alert.show();
     }
 
     /**

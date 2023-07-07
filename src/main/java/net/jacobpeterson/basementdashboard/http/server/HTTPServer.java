@@ -7,9 +7,9 @@ import static io.javalin.http.HttpCode.OK;
 import static io.javalin.http.HttpCode.UNAUTHORIZED;
 
 /**
- * {@link JavalinServer} is a small HTTP server.
+ * {@link HTTPServer} is a small HTTP server.
  */
-public class JavalinServer {
+public class HTTPServer {
 
     private static final String KEY = "z1WhA4d7DCGcB6w1VirC2R1R7P";
 
@@ -17,16 +17,16 @@ public class JavalinServer {
     private Javalin javalin;
 
     /**
-     * Instantiates a new {@link JavalinServer}.
+     * Instantiates a new {@link HTTPServer}.
      *
      * @param basementDashboard the {@link BasementDashboard}
      */
-    public JavalinServer(BasementDashboard basementDashboard) {
+    public HTTPServer(BasementDashboard basementDashboard) {
         this.basementDashboard = basementDashboard;
     }
 
     /**
-     * Starts {@link JavalinServer}.
+     * Starts {@link HTTPServer}.
      */
     public void start() {
         javalin = Javalin.create();
@@ -45,7 +45,7 @@ public class JavalinServer {
     }
 
     /**
-     * Stops {@link JavalinServer}.
+     * Stops {@link HTTPServer}.
      */
     public void stop() {
         if (javalin != null) {

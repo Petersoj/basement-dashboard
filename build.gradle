@@ -14,6 +14,8 @@ repositories {
 }
 
 dependencies {
+    // SLF4j
+    implementation group: "org.slf4j", name: "slf4j-api", version: "1.7.36"
     // Logback logger implementation
     implementation group: "ch.qos.logback", name: "logback-classic", version: "1.4.6"
 
@@ -59,7 +61,7 @@ mainClassName = "net.jacobpeterson.basementdashboard.Launcher"
 
 applicationDefaultJvmArgs = [
         // This prevents the JavaFX rendering from being pixelated and looking like a rainbow
-        "-Dprism.lcdtext=false"]
+        "-Dprism.lcdtext=false", "-Dprism.forceGPU", "-Dprism.order=d3d", "-Dprism.verbose=true"]
 applicationName = "Basement Dashboard"
 application {
     mainClass = "net.jacobpeterson.basementdashboard.Launcher"
@@ -111,3 +113,20 @@ jlink {
         appVersion = version.toString().replace("-SNAPSHOT", "")
     }
 }
+
+task finalizeJpackage() {
+    doLast {
+        final File jpackageOutputDir = new File(buildDir, "jpackage/" + os.name().toLowerCase())
+
+        if (os == OS.MAC) {
+            final File jpackageMacImage = new File(jpackageOutputDir, applicationName + ".app")
+
+            logger.info("Codesigning mac .app")
+            exec {
+                commandLine "codesign", "--force", "--deep", "--sign", "-", jpackageMacImage.getAbsolutePath()
+            }
+        }
+    }
+}
+
+jpackage.finalizedBy(finalizeJpackage)

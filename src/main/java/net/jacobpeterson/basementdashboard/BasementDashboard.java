@@ -5,8 +5,8 @@ import javafx.stage.Stage;
 import net.jacobpeterson.basementdashboard.data.BackgroundVideoData;
 import net.jacobpeterson.basementdashboard.data.DateTimeData;
 import net.jacobpeterson.basementdashboard.data.WeatherData;
-import net.jacobpeterson.basementdashboard.http.client.OkHTTPClient;
-import net.jacobpeterson.basementdashboard.http.server.JavalinServer;
+import net.jacobpeterson.basementdashboard.http.client.HTTPClient;
+import net.jacobpeterson.basementdashboard.http.server.HTTPServer;
 import net.jacobpeterson.basementdashboard.util.exception.ExceptionUtil;
 import net.jacobpeterson.basementdashboard.view.DashboardView;
 
@@ -17,20 +17,20 @@ import static net.jacobpeterson.basementdashboard.util.exception.ExceptionUtil.s
  */
 public class BasementDashboard extends Application {
 
-    private OkHTTPClient OkHTTPClient;
+    private HTTPClient httpClient;
     private BackgroundVideoData backgroundVideoData;
     private DateTimeData dateTimeData;
     private WeatherData weatherData;
-    private JavalinServer javalinServer;
+    private HTTPServer httpServer;
     private DashboardView dashboardView;
 
     @Override
     public void init() {
-        OkHTTPClient = new OkHTTPClient();
+        httpClient = new HTTPClient();
         backgroundVideoData = new BackgroundVideoData();
         dateTimeData = new DateTimeData();
         weatherData = new WeatherData(this);
-        javalinServer = new JavalinServer(this);
+        httpServer = new HTTPServer(this);
         dashboardView = new DashboardView(this);
     }
 
@@ -39,7 +39,7 @@ public class BasementDashboard extends Application {
         ExceptionUtil.PRIMARY_STAGE = primaryStage;
 
         try {
-            OkHTTPClient.start();
+            httpClient.start();
         } catch (Exception exception) {
             showException(exception.getMessage());
             stop();
@@ -67,7 +67,7 @@ public class BasementDashboard extends Application {
             return;
         }
         try {
-            javalinServer.start();
+            httpServer.start();
         } catch (Exception exception) {
             showException(exception.getMessage());
             stop();
@@ -83,7 +83,7 @@ public class BasementDashboard extends Application {
 
         // Stop in reverse order
         try {
-            javalinServer.stop();
+            httpServer.stop();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -103,14 +103,14 @@ public class BasementDashboard extends Application {
             exception.printStackTrace();
         }
         try {
-            OkHTTPClient.stop();
+            httpClient.stop();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
     }
 
-    public OkHTTPClient getOkHTTPClient() {
-        return OkHTTPClient;
+    public HTTPClient getHTTPClient() {
+        return httpClient;
     }
 
     public BackgroundVideoData getBackgroundVideoData() {

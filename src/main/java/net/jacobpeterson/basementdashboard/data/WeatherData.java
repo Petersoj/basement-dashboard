@@ -52,7 +52,7 @@ public class WeatherData {
         scheduledExecutorService = newSingleThreadScheduledExecutor(runnable -> new Thread(runnable, "Weather Data"));
         final LocalDateTime now = now();
         scheduledExecutorService.scheduleAtFixedRate(this::pollWeather,
-                between(now, now.plusHours(1).withMinute(30).withSecond(0).withNano(0)).toMillis(),
+                between(now, now.plusHours(1).withMinute(1).withSecond(0).withNano(0)).toMillis(),
                 ofHours(1).toMillis(), MILLISECONDS);
         scheduledExecutorService.execute(this::pollWeather);
     }
@@ -76,12 +76,12 @@ public class WeatherData {
                 .url("https://api.weather.gov/gridpoints/SLC/100,164/forecast/hourly")
                 .get()
                 .build();
-        try (Response response = basementDashboard.getOkHTTPClient().getOkHttpClient().newCall(request).execute()) {
+        try (Response response = basementDashboard.getHTTPClient().getOkHttpClient().newCall(request).execute()) {
             // Parse data
             final JsonObject root = GSON.fromJson(new JsonReader(response.body().charStream()), JsonObject.class);
             final JsonObject temperatureObject = root.getAsJsonObject("properties").getAsJsonArray("periods")
                     .get(0).getAsJsonObject();
-            temperature = temperatureObject.getAsJsonPrimitive("temperature").getAsString() + "℉";
+            temperature = temperatureObject.getAsJsonPrimitive("temperature").getAsString() + "\u2109";
             shortForecast = temperatureObject.getAsJsonPrimitive("shortForecast").getAsString();
         } catch (Exception exception) {
             temperature = "";

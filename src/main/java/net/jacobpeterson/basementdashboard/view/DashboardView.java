@@ -72,13 +72,13 @@ public class DashboardView {
 
     private void setupDate() {
         date = new Date(this);
-        date.getContainer().setTranslateY(-250);
+        date.getContainer().setTranslateY(-260);
         componentPane.getChildren().add(date.getContainer());
     }
 
     private void setupEnvironment() {
         environment = new Environment(this);
-        environment.getContainer().setTranslateY(250);
+        environment.getContainer().setTranslateY(260);
         componentPane.getChildren().add(environment.getContainer());
     }
 
