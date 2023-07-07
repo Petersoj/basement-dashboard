@@ -13,8 +13,13 @@ module BasementDashboard {
     requires javafx.media;
     opens net.jacobpeterson.basementdashboard to javafx.graphics;
 
+    requires uk.co.caprica.vlcj;
+    requires uk.co.caprica.vlcj.natives;
+    requires uk.co.caprica.vlcj.javafx;
+
     requires okhttp3;
     requires kotlin.stdlib;
+
     requires io.javalin;
 
     opens font;

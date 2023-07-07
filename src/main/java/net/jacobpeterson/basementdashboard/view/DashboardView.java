@@ -62,7 +62,7 @@ public class DashboardView {
 
     private void setupBackgroundVideo() {
         backgroundVideo = new BackgroundVideo(this);
-        componentPane.getChildren().add(backgroundVideo.getMediaView());
+        componentPane.getChildren().add(backgroundVideo.getImageView());
     }
 
     private void setupClock() {
@@ -94,7 +94,9 @@ public class DashboardView {
     /**
      * Stops {@link DashboardView}.
      */
-    public void stop() {}
+    public void stop() {
+        backgroundVideo.stop();
+    }
 
     public BasementDashboard getBasementDashboard() {
         return basementDashboard;

@@ -1,13 +1,11 @@
 package net.jacobpeterson.basementdashboard.view.component;
 
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
+import javafx.scene.image.ImageView;
 import net.jacobpeterson.basementdashboard.data.BackgroundVideoData;
 import net.jacobpeterson.basementdashboard.view.DashboardView;
-
-import static javafx.util.Duration.ZERO;
-import static net.jacobpeterson.basementdashboard.util.exception.ExceptionUtil.showException;
+import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
+import uk.co.caprica.vlcj.javafx.videosurface.ImageViewVideoSurface;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 /**
  * {@link BackgroundVideo} is the background video component.
@@ -16,7 +14,9 @@ public class BackgroundVideo {
 
     private final DashboardView dashboardView;
     private final BackgroundVideoData backgroundVideoData;
-    private final MediaView mediaView;
+    private final MediaPlayerFactory mediaPlayerFactory;
+    private final EmbeddedMediaPlayer embeddedMediaPlayer;
+    private final ImageView imageView;
     private int backgroundVideoFilesIndex;
 
     /**
@@ -28,33 +28,36 @@ public class BackgroundVideo {
         this.dashboardView = dashboardView;
         backgroundVideoData = dashboardView.getBasementDashboard().getBackgroundVideoData();
 
-        mediaView = new MediaView();
-        mediaView.setSmooth(false);
-        mediaView.setPreserveRatio(true);
+        imageView = new ImageView();
+        mediaPlayerFactory = new MediaPlayerFactory();
+        embeddedMediaPlayer = mediaPlayerFactory.mediaPlayers().newEmbeddedMediaPlayer();
+        embeddedMediaPlayer.videoSurface().set(new ImageViewVideoSurface(imageView));
+        embeddedMediaPlayer.audio().setMute(true);
+        embeddedMediaPlayer.controls().setRepeat(true);
 
         backgroundVideoFilesIndex = 0;
+    }
+
+    /**
+     * Stops this {@link BackgroundVideo}.
+     */
+    public void stop() {
+        embeddedMediaPlayer.release();
+        mediaPlayerFactory.release();
     }
 
     /**
      * Plays the next background video.
      */
     public synchronized void next() {
-        final MediaPlayer mediaPlayer = new MediaPlayer(new Media(backgroundVideoData.getBackgroundVideos()
-                .get(backgroundVideoFilesIndex++).toURI().toString()));
+        embeddedMediaPlayer.media().play(backgroundVideoData.getBackgroundVideos()
+                .get(backgroundVideoFilesIndex++).getAbsolutePath());
         if (backgroundVideoFilesIndex >= backgroundVideoData.getBackgroundVideos().size()) {
             backgroundVideoFilesIndex = 0;
         }
-        mediaPlayer.setAutoPlay(true);
-        mediaPlayer.setOnEndOfMedia(() -> {
-            mediaPlayer.seek(ZERO);
-            mediaPlayer.play();
-        });
-        mediaPlayer.setMute(true);
-        mediaPlayer.setOnError(() -> showException(mediaPlayer.getError()));
-        mediaView.setMediaPlayer(mediaPlayer);
     }
 
-    public MediaView getMediaView() {
-        return mediaView;
+    public ImageView getImageView() {
+        return imageView;
     }
 }

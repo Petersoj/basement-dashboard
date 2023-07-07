@@ -25,6 +25,9 @@ dependencies {
     // Google GSON
     implementation group: "com.google.code.gson", name: "gson", version: "2.10.1"
 
+    // VLCJ JavaFX
+    implementation group: "uk.co.caprica", name: "vlcj-javafx", version: "1.2.0"
+
     // OkHttp HTTP client
     implementation group: "com.squareup.okhttp3", name: "okhttp", version: "5.0.0-alpha.11"
 
@@ -61,7 +64,7 @@ mainClassName = "net.jacobpeterson.basementdashboard.Launcher"
 
 applicationDefaultJvmArgs = [
         // This prevents the JavaFX rendering from being pixelated and looking like a rainbow
-        "-Dprism.lcdtext=false", "-Dprism.forceGPU", "-Dprism.order=d3d", "-Dprism.verbose=true"]
+        "-Dprism.lcdtext=false", "-Dprism.forceGPU", "-Dprism.verbose=true"]
 applicationName = "Basement Dashboard"
 application {
     mainClass = "net.jacobpeterson.basementdashboard.Launcher"
