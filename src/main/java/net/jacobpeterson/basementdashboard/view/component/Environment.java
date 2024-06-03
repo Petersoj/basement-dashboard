@@ -41,7 +41,7 @@ public class Environment {
 
     private HBox newEnvironmentHBox(Color fill) {
         final Label locationLabel = newLabel(fill);
-        locationLabel.setText("Draper, Utah");
+        locationLabel.setText("Las Vegas, Nevada");
 
         final Label temperatureLabel = newLabel(fill);
         dashboardView.getBasementDashboard().getWeatherData().addOnTemperatureUpdate(temperature ->

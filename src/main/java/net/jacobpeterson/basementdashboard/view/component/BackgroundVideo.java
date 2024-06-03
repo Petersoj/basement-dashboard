@@ -36,6 +36,15 @@ public class BackgroundVideo {
         embeddedMediaPlayer.controls().setRepeat(true);
 
         backgroundVideoFilesIndex = 0;
+
+        dashboardView.getBasementDashboard().getDateTimeData().addOnSnoozeUpdate(snooze -> {
+            if (snooze && embeddedMediaPlayer.status().isPlaying()) {
+                embeddedMediaPlayer.controls().pause();
+            }
+            if (!snooze && !embeddedMediaPlayer.status().isPlaying()) {
+                embeddedMediaPlayer.controls().play();
+            }
+        });
     }
 
     /**

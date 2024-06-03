@@ -1,6 +1,7 @@
 package net.jacobpeterson.basementdashboard.data;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static java.time.Duration.between;
 import static java.time.Duration.ofDays;
@@ -45,9 +47,19 @@ public class DateTimeData {
             .appendText(DAY_OF_MONTH)
             .toFormatter();
 
+    private static final Supplier<Boolean> SNOOZE_ON_CHECK = () -> {
+        final LocalTime now = LocalTime.now();
+        return now.getHour() == 1 && now.getMinute() == 0;
+    };
+    private static final Supplier<Boolean> SNOOZE_OFF_CHECK = () -> {
+        final LocalTime now = LocalTime.now();
+        return now.getHour() == 6 && now.getMinute() == 0;
+    };
+
     private final List<BiConsumer<String, String>> onTimeMinuteUpdates;
     private final List<Consumer<String>> onDayOfWeekUpdates;
     private final List<BiConsumer<String, String>> onDayOfMonthUpdates;
+    private final List<Consumer<Boolean>> onSnoozeUpdates;
     private ScheduledExecutorService scheduledExecutorService;
 
     /**
@@ -57,6 +69,7 @@ public class DateTimeData {
         onTimeMinuteUpdates = synchronizedList(new ArrayList<>());
         onDayOfWeekUpdates = synchronizedList(new ArrayList<>());
         onDayOfMonthUpdates = synchronizedList(new ArrayList<>());
+        onSnoozeUpdates = synchronizedList(new ArrayList<>());
     }
 
     /**
@@ -69,6 +82,15 @@ public class DateTimeData {
                     synchronized (onTimeMinuteUpdates) {
                         for (BiConsumer<String, String> onTimeMinuteUpdate : onTimeMinuteUpdates) {
                             onTimeMinuteUpdate(onTimeMinuteUpdate);
+                        }
+                    }
+                    final boolean snoozeOnCheck = SNOOZE_ON_CHECK.get();
+                    final boolean snoozeOffCheck = SNOOZE_OFF_CHECK.get();
+                    if (snoozeOnCheck || snoozeOffCheck) {
+                        synchronized (onSnoozeUpdates) {
+                            for (Consumer<Boolean> onSnoozeUpdate : onSnoozeUpdates) {
+                                onSnoozeUpdate(onSnoozeUpdate);
+                            }
                         }
                     }
                 }, between(now, now.plusMinutes(1).withSecond(0).withNano(0)).toMillis(),
@@ -107,6 +129,10 @@ public class DateTimeData {
         onTimeMinuteUpdate.accept(HOUR_FORMATTER.format(now), MINUTE_FORMATTER.format(now));
     }
 
+    private void onSnoozeUpdate(Consumer<Boolean> onSnoozeUpdate) {
+        onSnoozeUpdate.accept(SNOOZE_ON_CHECK.get());
+    }
+
     private void onDayOfWeekUpdate(Consumer<String> onDayOfWeekUpdate) {
         onDayOfWeekUpdate.accept(DAY_OF_WEEK_FORMATTER.format(now()));
     }
@@ -119,6 +145,11 @@ public class DateTimeData {
     public void addOnTimeMinuteUpdate(BiConsumer<String, String> onTimeMinuteUpdate) {
         onTimeMinuteUpdates.add(onTimeMinuteUpdate);
         onTimeMinuteUpdate(onTimeMinuteUpdate);
+    }
+
+    public void addOnSnoozeUpdate(Consumer<Boolean> onSnoozeUpdate) {
+        onSnoozeUpdates.add(onSnoozeUpdate);
+        onSnoozeUpdate(onSnoozeUpdate);
     }
 
     public void addOnDayOfWeekUpdate(Consumer<String> onDayOfWeekUpdate) {
