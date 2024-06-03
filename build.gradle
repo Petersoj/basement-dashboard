@@ -3,10 +3,7 @@ plugins {
     id "application"
 
     // JavaFX
-    id "org.openjfx.javafxplugin" version "0.0.14"
-
-    // Jlink/Jpackage
-    id "org.beryx.jlink" version "2.26.0"
+    id "org.openjfx.javafxplugin" version "0.1.0"
 }
 
 repositories {
@@ -15,12 +12,12 @@ repositories {
 
 dependencies {
     // SLF4j
-    implementation group: "org.slf4j", name: "slf4j-api", version: "1.7.36"
+    implementation group: "org.slf4j", name: "slf4j-api", version: "2.1.0-alpha1"
     // Logback logger implementation
-    implementation group: "ch.qos.logback", name: "logback-classic", version: "1.4.6"
+    implementation group: "ch.qos.logback", name: "logback-classic", version: "1.5.6"
 
     // Google Guava for a variety of useful methods
-    implementation group: "com.google.guava", name: "guava", version: "31.1-jre"
+    implementation group: "com.google.guava", name: "guava", version: "33.1.0-jre"
 
     // Google GSON
     implementation group: "com.google.code.gson", name: "gson", version: "2.10.1"
@@ -29,36 +26,17 @@ dependencies {
     implementation group: "uk.co.caprica", name: "vlcj-javafx", version: "1.2.0"
 
     // OkHttp HTTP client
-    implementation group: "com.squareup.okhttp3", name: "okhttp", version: "5.0.0-alpha.11"
+    implementation group: "com.squareup.okhttp3", name: "okhttp", version: "5.0.0-alpha.12"
 
     // Javalin
-    implementation group: "io.javalin", name: "javalin", version: "4.6.4"
-}
-
-enum OS {
-    MAC,
-    WINDOWS,
-    LINUX,
-    UNKNOWN
-}
-
-OS os = OS.UNKNOWN
-String osName = System.getProperty("os.name").toLowerCase()
-if (osName.contains("mac")) {
-    os = OS.MAC
-} else if (osName.contains("windows")) {
-    os = OS.WINDOWS
-} else if (osName.contains("linux")) {
-    os = OS.LINUX
-} else {
-    throw new IllegalStateException("Cannot build with: " + osName)
+    implementation group: "io.javalin", name: "javalin", version: "6.1.3"
 }
 
 group = "net.jacobpeterson.basementdashboard"
 version = "1.0-SNAPSHOT"
 
-sourceCompatibility = 14
-targetCompatibility = 14
+sourceCompatibility = 21
+targetCompatibility = 21
 
 mainClassName = "net.jacobpeterson.basementdashboard.Launcher"
 
@@ -68,7 +46,6 @@ applicationDefaultJvmArgs = [
 applicationName = "Basement Dashboard"
 application {
     mainClass = "net.jacobpeterson.basementdashboard.Launcher"
-    mainModule = "BasementDashboard"
 }
 
 distTar.enabled = false
@@ -78,58 +55,6 @@ build {
 }
 
 javafx {
-    version = "20"
+    version = "21"
     modules = ["javafx.controls", "javafx.base", "javafx.graphics", "javafx.media"]
 }
-
-jlink {
-    options.addAll("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages")
-
-    launcher {
-        name = "BasementDashboard"
-    }
-
-    jpackage {
-        // Set icon path
-        String iconPath
-        if (os == OS.MAC) {
-            iconPath = new File("assets/logo/logo.icns").getPath()
-            skipInstaller = true // Just generate a .app image
-        } else if (os == OS.WINDOWS) {
-            iconPath = new File("assets/logo/logo.ico").getPath()
-            installerOptions = ["--win-per-user-install", "--win-menu", "--win-menu-group", "", "--win-shortcut"]
-        } else if (os == OS.LINUX) {
-            iconPath = new File("assets/logo/logo.png").getPath()
-            skipInstaller = true // Just generate an image/shell script
-        } else {
-            logger.log(LogLevel.ERROR, "OS not detected!");
-        }
-        if (iconPath != null) {
-            imageOptions = ["--icon", new File(projectDir.getAbsolutePath(), iconPath).getAbsolutePath()]
-        }
-
-        // Set jpackage options
-        outputDir = "jpackage" + File.separator + os.name().toLowerCase()
-        imageName = applicationName
-        installerName = applicationName
-        vendor = "Jacob Peterson"
-        appVersion = version.toString().replace("-SNAPSHOT", "")
-    }
-}
-
-task finalizeJpackage() {
-    doLast {
-        final File jpackageOutputDir = new File(buildDir, "jpackage/" + os.name().toLowerCase())
-
-        if (os == OS.MAC) {
-            final File jpackageMacImage = new File(jpackageOutputDir, applicationName + ".app")
-
-            logger.info("Codesigning mac .app")
-            exec {
-                commandLine "codesign", "--force", "--deep", "--sign", "-", jpackageMacImage.getAbsolutePath()
-            }
-        }
-    }
-}
-
-jpackage.finalizedBy(finalizeJpackage)

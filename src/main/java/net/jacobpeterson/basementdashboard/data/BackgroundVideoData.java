@@ -41,7 +41,7 @@ public class BackgroundVideoData {
         final List<File> backgroundVideoFiles = Arrays.stream(files)
                 .filter(file -> file.getName().contains(".mp4"))
                 .collect(Collectors.toList());
-        if (backgroundVideoFiles.size() == 0) {
+        if (backgroundVideoFiles.isEmpty()) {
             throw new RuntimeException(BACKGROUND_VIDEOS_DIRECTORY.getAbsolutePath() + " is empty!");
         }
         return backgroundVideoFiles;

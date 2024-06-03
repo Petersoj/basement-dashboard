@@ -3,8 +3,8 @@ package net.jacobpeterson.basementdashboard.http.server;
 import io.javalin.Javalin;
 import net.jacobpeterson.basementdashboard.BasementDashboard;
 
-import static io.javalin.http.HttpCode.OK;
-import static io.javalin.http.HttpCode.UNAUTHORIZED;
+import static io.javalin.http.HttpStatus.OK;
+import static io.javalin.http.HttpStatus.UNAUTHORIZED;
 
 /**
  * {@link HTTPServer} is a small HTTP server.

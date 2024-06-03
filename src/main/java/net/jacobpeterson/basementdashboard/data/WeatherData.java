@@ -13,7 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 import static java.time.Duration.between;
-import static java.time.Duration.ofHours;
+import static java.time.Duration.ofMinutes;
 import static java.time.LocalDateTime.now;
 import static java.util.Collections.synchronizedList;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
@@ -53,7 +53,7 @@ public class WeatherData {
         final LocalDateTime now = now();
         scheduledExecutorService.scheduleAtFixedRate(this::pollWeather,
                 between(now, now.plusHours(1).withMinute(1).withSecond(0).withNano(0)).toMillis(),
-                ofHours(1).toMillis(), MILLISECONDS);
+                ofMinutes(15).toMillis(), MILLISECONDS);
         scheduledExecutorService.execute(this::pollWeather);
     }
 
@@ -73,7 +73,7 @@ public class WeatherData {
     private void pollWeather() {
         // Request data
         final Request request = new Request.Builder()
-                .url("https://api.weather.gov/gridpoints/SLC/100,164/forecast/hourly")
+                .url("https://api.weather.gov/gridpoints/VEF/116,99/forecast/hourly")
                 .get()
                 .build();
         try (Response response = basementDashboard.getHTTPClient().getOkHttpClient().newCall(request).execute()) {
@@ -81,7 +81,7 @@ public class WeatherData {
             final JsonObject root = GSON.fromJson(new JsonReader(response.body().charStream()), JsonObject.class);
             final JsonObject temperatureObject = root.getAsJsonObject("properties").getAsJsonArray("periods")
                     .get(0).getAsJsonObject();
-            temperature = temperatureObject.getAsJsonPrimitive("temperature").getAsString() + "\u2109";
+            temperature = temperatureObject.getAsJsonPrimitive("temperature").getAsString() + "℉";
             shortForecast = temperatureObject.getAsJsonPrimitive("shortForecast").getAsString();
         } catch (Exception exception) {
             temperature = "";
