@@ -9,6 +9,8 @@ import net.jacobpeterson.basementdashboard.view.component.Clock;
 import net.jacobpeterson.basementdashboard.view.component.Date;
 import net.jacobpeterson.basementdashboard.view.component.Environment;
 
+import static java.lang.Thread.sleep;
+import static javafx.application.Platform.runLater;
 import static javafx.scene.Cursor.NONE;
 import static javafx.scene.paint.Color.BLACK;
 
@@ -83,12 +85,16 @@ public class DashboardView {
     }
 
     private void setupStage() {
-        stage.setMinWidth(1280);
-        stage.setMinHeight(720);
-        stage.setFullScreen(true);
         stage.setTitle("Basement Dashboard");
         stage.setScene(scene);
         stage.show();
+        stage.setMaximized(true);
+        new Thread(() -> {
+            try {
+                sleep(2000);
+            } catch (InterruptedException ignored) {}
+            runLater(() -> stage.setFullScreen(true));
+        }).start();
     }
 
     /**
