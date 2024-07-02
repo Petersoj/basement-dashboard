@@ -3,6 +3,7 @@ package net.jacobpeterson.basementdashboard.util.exception;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
+import static javafx.application.Platform.runLater;
 import static javafx.scene.control.Alert.AlertType.ERROR;
 import static javafx.scene.control.ButtonType.CLOSE;
 
@@ -25,17 +26,14 @@ public class ExceptionUtil {
      */
     public static String formatStacktrace(Throwable throwable) {
         try {
-            StringBuilder formattedString = new StringBuilder();
-
+            final StringBuilder formattedString = new StringBuilder();
             formattedString.append(throwable.toString());
             formattedString.append(System.lineSeparator());
-
             for (StackTraceElement stackTraceElement : throwable.getStackTrace()) {
                 formattedString.append("    ");
                 formattedString.append(stackTraceElement);
                 formattedString.append(System.lineSeparator());
             }
-
             return formattedString.toString();
         } catch (Exception ignored) {
             return throwable.toString();
@@ -48,12 +46,13 @@ public class ExceptionUtil {
      * @param exceptionString the exception string
      */
     public static void showException(String exceptionString) {
-        System.err.println(exceptionString);
-        final Alert alert = new Alert(ERROR, exceptionString, CLOSE);
-        if (PRIMARY_STAGE.isShowing()) {
-            alert.initOwner(PRIMARY_STAGE);
-        }
-        alert.show();
+        runLater(() -> {
+            final Alert alert = new Alert(ERROR, exceptionString, CLOSE);
+            if (PRIMARY_STAGE.isShowing()) {
+                alert.initOwner(PRIMARY_STAGE);
+            }
+            alert.show();
+        });
     }
 
     /**
@@ -61,7 +60,9 @@ public class ExceptionUtil {
      *
      * @param exception the {@link Exception}
      */
+    @SuppressWarnings("CallToPrintStackTrace")
     public static void showException(Exception exception) {
+        exception.printStackTrace();
         showException(formatStacktrace(exception));
     }
 }
